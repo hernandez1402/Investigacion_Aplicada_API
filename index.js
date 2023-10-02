@@ -39,5 +39,46 @@ app.get('/api/tecnico', (req, res) =>{
 app.get('/api/ingenieria', (req, res) =>{
     res.send(ingenieria);
 })
+//ruta de prerequisitos por materia en ingenieria.
+app.get('/api/ingenieria/:id', (req, res) =>{
+    const MateriaIngenieria =  ingenieria.find( materia => materia.id === parseInt(req.params.id))
+    if(!MateriaIngenieria)
+    {
+     return res.status(404).send('Oops, no hemos encontrado resultado.');
+    }
+    else
+    {
+     if(MateriaIngenieria.hasOwnProperty('prerequirements'))
+     {
+         const newMateria =  ingenieria.filter(c =>  MateriaIngenieria.prerequirements.includes(c.id) )
+         res.send(newMateria);
+     }
+     else
+    {
+      res.send(`La siguiente materia "${MateriaIngenieria.name}" no necesita ningun prerequisito para cursar`);
+    }
+ }
+})
+//ruta prerequisitos por materia en tecnico.
+app.get('/api/tecnico/:id', (req, res) =>{
+    const MateriaTecnico =  tecnico.find( materia => materia.id === parseInt(req.params.id))
+    if(!MateriaTecnico)
+    {
+     return res.status(404).send('Oops, no hemos encontrado resultado.');
+    }
+    else
+    {
+     if(MateriaTecnico.hasOwnProperty('prerequirements'))
+     {
+         const newMateria =  tecnico.filter(c =>  MateriaTecnico.prerequirements.includes(c.id) )
+         res.send(newMateria);
+     }
+     else
+    {
+      res.send(`La siguiente materia "${MateriaTecnico.name}" no necesita ningun prerequisito para cursar`);
+    }
+ }
+})
+
 const port = process.env.port || 80;
 app.listen(port, () => console.log(`Escuchando en puerto ${port}...`));
