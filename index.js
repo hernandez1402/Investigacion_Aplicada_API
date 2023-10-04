@@ -14,7 +14,7 @@ const tecnico = [
     {id: 8, name: 'Programación Orientada a Objetos', prerequirements:[3], credits: 4, enrolled: true},
     {id: 9, name: 'Administración de Servicios en la Nube', prerequirements:[3,4], credits: 4, enrolled: true},
     {id: 10, name: 'Diseño y Programación de Software Multiplataforma',prerequirements:[5,6] ,credits: 4, enrolled: true},
-]
+];
 
 const ingenieria = [
     {id: 1, name: 'Ecuaciones Diferenciales', credits: 4, enrolled: true},
@@ -27,8 +27,24 @@ const ingenieria = [
     {id: 8, name: 'Programación Estructurada', prerequirements:[4,5],credits: 4, enrolled: true},
     {id: 9, name: 'Estadistica Aplicada', prerequirements:[1,2],credits: 4, enrolled: true},
     {id: 10, name: 'programacion Orientada a Objetos',prerequirements:[4,5], credits: 4, enrolled: true},
-]
+];
 
+const CicloTecnico =[
+    {
+        id:1, materias : [1,2,3,4,5]
+    },
+    {
+        id:2, materias : [6,7,8,9,10]
+    }
+];
+const CicloIngenieria =[
+    {
+        id:1, materias : [1,2,3,4,5]
+    },
+    {
+        id:2, materias : [6,7,8,9,10]
+    }
+];
 app.get('/', (req, res) => {
     res.send('Node JS api');
 })
@@ -79,6 +95,29 @@ app.get('/api/tecnico/:id', (req, res) =>{
     }
  }
 })
-
+//ruta de consulta de materias por ciclos de Ingenieria.
+app.get('/api/ingenieria/ciclo/:id', (req,res) => {
+   const ciclo = CicloIngenieria.find( ciclo => ciclo.id === parseInt(req.params.id));
+   if(!ciclo)
+   {
+    return res.status(404).send('Oops, no hemos encontrado resultado.');
+   }
+   else{
+    const Materias = ingenieria.filter( materia => ciclo.materias.includes(materia.id));
+    res.send(Materias);
+   }
+})
+//ruta de consulta de materias por ciclos de Tecnico.
+app.get('/api/tecnico/ciclo/:id', (req,res) => {
+    const ciclo = CicloTecnico.find( ciclo => ciclo.id === parseInt(req.params.id));
+    if(!ciclo)
+    {
+     return res.status(404).send('Oops, no hemos encontrado resultado.');
+    }
+    else{
+     const Materias = tecnico.filter( materia => ciclo.materias.includes(materia.id));
+     res.send(Materias);
+    }
+ })
 const port = process.env.port || 80;
 app.listen(port, () => console.log(`Escuchando en puerto ${port}...`));
