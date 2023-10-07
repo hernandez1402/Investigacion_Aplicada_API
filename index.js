@@ -121,3 +121,40 @@ app.get('/api/tecnico/ciclo/:id', (req,res) => {
  })
 const port = process.env.port || 80;
 app.listen(port, () => console.log(`Escuchando en puerto ${port}...`));
+
+// Ruta para inscripción de materias por carrera seleccionada
+app.post('/api/inscripcion-carrera', (req, res) => {
+  const { carrera, materias } = req.body;
+
+  // Verificar que la carrera exista (tecnico o ingenieria)
+  const carreraSeleccionada = carrera === 'tecnico' ? tecnico : carrera === 'ingenieria' ? ingenieria : null;
+
+  if (!carreraSeleccionada) {
+    return res.status(400).json({ message: 'Carrera no válida.' });
+  }
+
+  // Validar que la cantidad total de UV no exceda 4
+  const totalUV = materias.reduce((acc, materiaId) => {
+    const materia = carreraSeleccionada.find((m) => m.id === materiaId);
+    return acc + (materia ? materia.credits : 0);
+  }, 0);
+
+  if (totalUV > 4) {
+    return res.status(400).json({ message: 'La cantidad de UV excede el límite permitido.' });
+  }
+
+  // Verificar que las materias sean válidas
+  const materiasValidas = materias.every((materiaId) => {
+    return carreraSeleccionada.some((m) => m.id === materiaId);
+  });
+
+  if (!materiasValidas) {
+    return res.status(400).json({ message: 'Alguna de las materias seleccionadas no es válida para la carrera.' });
+  }
+
+  // Implementa la lógica para registrar las materias inscritas en la carrera seleccionada
+
+  // Ejemplo de respuesta
+  res.status(200).json({ message: 'Inscripción por carrera exitosa' });
+});
+
