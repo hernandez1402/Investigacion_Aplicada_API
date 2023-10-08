@@ -173,3 +173,16 @@ materias.forEach((materiaId) => {
 
 // Ejemplo de respuesta con las materias inscritas
 res.status(200).json({ message: 'Inscripción por carrera exitosa', materiasInscritas });
+    
+    //ruta para eliminar inscripcion de materia por ID
+app.delete("/inscripciones/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = inscripciones.findIndex((inscripcion) => inscripcion.id === id);
+
+  if (index !== -1) {
+    inscripciones.splice(index, 1);
+    res.status(204).send(); // Respuesta exitosa sin contenido
+  } else {
+    res.status(404).json({ message: "Inscripción no encontrada" });
+  }
+});
