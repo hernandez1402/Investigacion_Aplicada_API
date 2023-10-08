@@ -133,28 +133,43 @@ app.post('/api/inscripcion-carrera', (req, res) => {
     return res.status(400).json({ message: 'Carrera no válida.' });
   }
 
-  // Validar que la cantidad total de UV no exceda 4
-  const totalUV = materias.reduce((acc, materiaId) => {
+
+         // Validar que la cantidad total de UV no exceda 4
+const totalUV = materias.reduce((acc, materiaId) => {
     const materia = carreraSeleccionada.find((m) => m.id === materiaId);
     return acc + (materia ? materia.credits : 0);
-  }, 0);
+}, 0);
 
-  if (totalUV > 4) {
+if (totalUV > 4) {
     return res.status(400).json({ message: 'La cantidad de UV excede el límite permitido.' });
-  }
+}
 
-  // Verificar que las materias sean válidas
-  const materiasValidas = materias.every((materiaId) => {
+// Verificar que se estén inscribiendo exactamente 4 materias
+if (materias.length !== 4) {
+    return res.status(400).json({ message: 'Debes inscribir exactamente 4 materias.' });
+
+
+
+
+// Verificar que las materias sean válidas
+const materiasValidas = materias.every((materiaId) => {
     return carreraSeleccionada.some((m) => m.id === materiaId);
-  });
-
-  if (!materiasValidas) {
-    return res.status(400).json({ message: 'Alguna de las materias seleccionadas no es válida para la carrera.' });
-  }
-
-  // Implementa la lógica para registrar las materias inscritas en la carrera seleccionada
-
-  // Ejemplo de respuesta
-  res.status(200).json({ message: 'Inscripción por carrera exitosa' });
 });
 
+if (!materiasValidas) {
+    return res.status(400).json({ message: 'Alguna de las materias seleccionadas no es válida para la carrera.' });
+}
+
+const materiasInscritas = [];
+
+materias.forEach((materiaId) => {
+    const materia = carreraSeleccionada.find((m) => m.id === materiaId);
+    if (materia) {
+        materiasInscritas.push(materia);
+    }
+});
+
+
+
+// Ejemplo de respuesta con las materias inscritas
+res.status(200).json({ message: 'Inscripción por carrera exitosa', materiasInscritas });
